@@ -80,6 +80,10 @@ class Track:
         self._n_init = n_init
         self._max_age = max_age
 
+        self.bbox = self.to_tlbr()
+        self.center = self.update_center()
+        self.confidence = None
+
     def to_tlwh(self):
         """Get current position in bounding box format `(top left x, top left y,
         width, height)`.
@@ -164,3 +168,12 @@ class Track:
     def is_deleted(self):
         """Returns True if this track is dead and should be deleted."""
         return self.state == TrackState.Deleted
+
+    def update_center(self):
+        """
+        Updates the center point of the bounding box.
+        """
+        x1, y1, x2, y2 = self.bbox
+        center_x = int((x1 + x2) / 2)
+        center_y = int((y1 + y2) / 2)
+        return (center_x, center_y)
