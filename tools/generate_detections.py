@@ -6,6 +6,8 @@ import numpy as np
 import cv2
 import tensorflow as tf
 
+# Enable TensorFlow 1.x compatibility mode
+tf.compat.v1.disable_eager_execution()
 
 def _run_in_batches(f, data_dict, out, batch_size):
     data_len = len(out)
@@ -55,7 +57,7 @@ def extract_image_patch(image, bbox, patch_shape):
 
     # convert to top left, bottom right
     bbox[2:] += bbox[:2]
-    bbox = bbox.astype(np.int)
+    bbox = bbox.astype(int)
 
     # clip at image boundaries
     bbox[:2] = np.maximum(0, bbox[:2])
@@ -72,14 +74,14 @@ class ImageEncoder(object):
 
     def __init__(self, checkpoint_filename, input_name="images",
                  output_name="features"):
-        self.session = tf.Session()
-        with tf.gfile.GFile(checkpoint_filename, "rb") as file_handle:
-            graph_def = tf.GraphDef()
+        self.session = tf.compat.v1.Session()
+        with tf.io.gfile.GFile(checkpoint_filename, "rb") as file_handle:
+            graph_def = tf.compat.v1.GraphDef()
             graph_def.ParseFromString(file_handle.read())
         tf.import_graph_def(graph_def, name="net")
-        self.input_var = tf.get_default_graph().get_tensor_by_name(
+        self.input_var = tf.compat.v1.get_default_graph().get_tensor_by_name(
             "net/%s:0" % input_name)
-        self.output_var = tf.get_default_graph().get_tensor_by_name(
+        self.output_var = tf.compat.v1.get_default_graph().get_tensor_by_name(
             "net/%s:0" % output_name)
 
         assert len(self.output_var.get_shape()) == 2
@@ -194,7 +196,7 @@ def parse_args():
         required=True)
     parser.add_argument(
         "--detection_dir", help="Path to custom detections. Defaults to "
-        "standard MOT detections Directory structure should be the default "
+        "standard MOT detections. Directory structure should be the default "
         "MOTChallenge structure: [sequence]/det/det.txt", default=None)
     parser.add_argument(
         "--output_dir", help="Output directory. Will be created if it does not"
