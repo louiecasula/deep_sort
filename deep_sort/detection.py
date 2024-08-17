@@ -48,3 +48,6 @@ class Detection(object):
         ret[:2] += ret[2:] / 2
         ret[2] /= ret[3]
         return ret
+
+    def __str__(self):
+        return f"Detection(bbox={self.tlwh}, confidence={self.confidence}, class_id={self.class_id})"

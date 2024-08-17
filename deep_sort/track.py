@@ -82,6 +82,7 @@ class Track:
 
         self.bbox = self.to_tlbr()
         self.center = self.update_center()
+        self.class_id = None
         self.confidence = None
 
     def to_tlwh(self):
@@ -177,3 +178,6 @@ class Track:
         center_x = int((x1 + x2) / 2)
         center_y = int((y1 + y2) / 2)
         return (center_x, center_y)
+
+    def __str__(self):
+        return f"Track(bbox={self.bbox}, center={self.center}, confidence={self.confidence})"
